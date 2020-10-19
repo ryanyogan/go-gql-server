@@ -1,7 +1,17 @@
 package main
 
-import "yogan.dev/go-gql-server/pkg/server"
+import (
+	"log"
+
+	"yogan.dev/go-gql-server/internal/orm"
+	"yogan.dev/go-gql-server/pkg/server"
+)
 
 func main() {
-	server.Run()
+	orm, err := orm.Factory()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	server.Run(orm)
 }

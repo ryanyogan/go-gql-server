@@ -5,11 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"yogan.dev/go-gql-server/internal/gql"
 	"yogan.dev/go-gql-server/internal/gql/resolvers"
+	"yogan.dev/go-gql-server/internal/orm"
 )
 
-func GraphqlHandler() gin.HandlerFunc {
+func GraphqlHandler(orm *orm.ORM) gin.HandlerFunc {
 	c := gql.Config{
-		Resolvers: &resolvers.Resolver{},
+		Resolvers: &resolvers.Resolver{
+			ORM: orm,
+		},
 	}
 
 	h := handler.GraphQL(gql.NewExecutableSchema(c))

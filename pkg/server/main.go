@@ -1,10 +1,10 @@
 package server
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"yogan.dev/go-gql-server/internal/handlers"
+	log "yogan.dev/go-gql-server/internal/logger"
+	"yogan.dev/go-gql-server/internal/orm"
 	"yogan.dev/go-gql-server/pkg/utils"
 )
 
@@ -25,7 +25,9 @@ func init() {
 }
 
 // Run the web server
-func Run() {
+func Run(orm *orm.ORM) {
+	log.Info("GORM_CONNECTION_DSN: ", utils.MustGet("GORM_CONNECTION_DSN"))
+
 	endpoint := "http://" + host + ":" + port
 
 	r := gin.Default()
@@ -33,12 +35,12 @@ func Run() {
 
 	if isPgEnabled {
 		r.GET(gqlPgPath, handlers.PlaygroundHandler(gqlPath))
-		log.Println("GraphQL Playground @ " + endpoint + gqlPgPath)
+		log.Info("GraphQL Playground @ " + endpoint + gqlPgPath)
 	}
 
-	r.POST(gqlPath, handlers.GraphqlHandler())
-	log.Println("GraphQL @ " + endpoint + gqlPath)
+	r.POST(gqlPath, handlers.GraphqlHandler(orm))
+	log.Info("GraphQL @ " + endpoint + gqlPath)
 
-	log.Println("Running @ http://" + host + ":" + port)
-	log.Fatalln(r.Run(host + ":" + port))
+	log.Info("Running @ http://" + host + ":" + port)
+	log.Fatal(r.Run(host + ":" + port))
 }
